@@ -1,6 +1,6 @@
 {
   "name": "csrf-sync",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A utility package to help implement stateful CSRF protection using the Synchroniser Token Pattern in express.",
   "type": "module",
   "module": "es2020",
@@ -20,7 +20,7 @@
     "build:clean": "npm run clean && npm run build && npm run build:types"
   },
   "author": "psibean",
-  "license": "MIT",
+  "license": "ISC",
   "homepage": "https://github.com/Psifi-Solutions/csrf-sync",
   "repository": "https://github.com/Psifi-Solutions/csrf-sync",
   "keywords": [
