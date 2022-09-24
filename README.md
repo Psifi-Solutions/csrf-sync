@@ -5,7 +5,7 @@
 <h4 align="center">A utility package to help implement stateful CSRF protection using the Synchroniser Token Pattern in express.</h4>
 
 <p align="center">
-  <a href="nmpmlink">
+  <a href="https://www.npmjs.com/package/csrf-sync">
     <img src="https://img.shields.io/npm/v/csrf-sync" />
   </a>
   <a href="https://discord.gg/JddkbuSnUU">
