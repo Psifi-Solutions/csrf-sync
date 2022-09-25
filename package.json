@@ -1,6 +1,6 @@
 {
   "name": "csrf-sync",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A utility package to help implement stateful CSRF protection using the Synchroniser Token Pattern in express.",
   "type": "module",
   "module": "es2020",
