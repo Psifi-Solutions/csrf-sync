@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "module": "es2020",
+    "module": "ESNext",
+    "target": "ESNext",
     "esModuleInterop": true,
     "noImplicitAny": true,
     "moduleResolution": "node",
     "sourceMap": false,
     "rootDir": "./src",
-    "outDir": "./lib",
+    "outDir": "./lib/esm",
     "baseUrl": ".",
     "strictNullChecks": true,
     "isolatedModules": false,
@@ -17,6 +18,5 @@
       "*": ["node_modules/*"]
     }
   },
-  "include": ["./src/**/*"],
-  "exclude": ["./src/tests/**/*"]
+  "include": ["./src/index.ts"]
 }

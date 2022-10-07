@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { randomBytes } from "node:crypto";
+import { randomBytes } from "crypto";
 import createHttpError, { type HttpError } from "http-errors";
 
 declare module "express-session" {
