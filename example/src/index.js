@@ -5,8 +5,11 @@ import session from "express-session";
 const app = express();
 const port = 5555;
 
+// never use session with the default memory store.
+// You should use a proper store in an actual deployment
 app.use(
   session({
+    // Don't do this, use a cryptographically random generated string
     secret: "test",
   })
 );
