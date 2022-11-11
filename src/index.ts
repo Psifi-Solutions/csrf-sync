@@ -25,6 +25,7 @@ export interface CsrfSyncOptions {
   storeTokenInState?: CsrfTokenStorer;
   header?: string;
   size?: number;
+  form?: string;
 }
 
 export interface CsrfSync {
@@ -64,7 +65,7 @@ export const csrfSync = ({
   };
 
   const isRequestValid: CsrfRequestValidator = (req) => {
-    const receivedToken =  (req.body && req.body._csrf) || req.headers[header];
+    const receivedToken =  (req.body && req.body[form]) || req.headers[header];
     const storedToken = getTokenFromState(req);
 
     return (
