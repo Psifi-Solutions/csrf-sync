@@ -46,6 +46,7 @@ export const csrfSync = ({
   },
   header = "x-csrf-token",
   size = 128,
+  form = '_csrf',
 }: CsrfSyncOptions = {}): CsrfSync => {
   const invalidCsrfTokenError = createHttpError(403, "invalid csrf token", {
     code: "EBADCSRFTOKEN",
@@ -63,7 +64,7 @@ export const csrfSync = ({
   };
 
   const isRequestValid: CsrfRequestValidator = (req) => {
-    const receivedToken = req.headers[header];
+    const receivedToken =  (req.body && req.body._csrf) || req.headers[header];
     const storedToken = getTokenFromState(req);
 
     return (
