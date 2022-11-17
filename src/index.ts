@@ -10,6 +10,7 @@ declare module "express-session" {
 
 export type CsrfSyncedToken = string | null | undefined;
 export type CsrfTokenStorer = (req: Request, token?: CsrfSyncedToken) => void;
+export type CsrfTokenRequest = (req: Request) => string | string[] | undefined;
 export type CsrfTokenRetriever = (req: Request) => CsrfSyncedToken;
 export type CsrfTokenGenerator = (req: Request) => string;
 export type CsrfTokenRevoker = (req: Request) => void;
@@ -21,17 +22,17 @@ export type CsrfSynchronisedProtection = (
 ) => void;
 
 export interface CsrfSyncOptions {
+  getTokenFromRequest?: CsrfTokenRequest;
   getTokenFromState?: CsrfTokenRetriever;
   storeTokenInState?: CsrfTokenStorer;
-  header?: string;
   size?: number;
-  form?: string;
 }
 
 export interface CsrfSync {
   invalidCsrfTokenError: HttpError;
   csrfSynchronisedProtection: CsrfSynchronisedProtection;
   generateToken: CsrfTokenGenerator;
+  getTokenFromRequest: CsrfTokenRequest;
   getTokenFromState: CsrfTokenRetriever;
   isRequestValid: CsrfRequestValidator;
   storeTokenInState: CsrfTokenStorer;
@@ -39,15 +40,14 @@ export interface CsrfSync {
 }
 
 export const csrfSync = ({
+  getTokenFromRequest = (req) => req.headers['x-csrf-token'],
   getTokenFromState = (req) => {
     return req.session.csrfToken;
   },
   storeTokenInState = (req, token) => {
     req.session.csrfToken = token;
   },
-  header = "x-csrf-token",
   size = 128,
-  form = '_csrf',
 }: CsrfSyncOptions = {}): CsrfSync => {
   const invalidCsrfTokenError = createHttpError(403, "invalid csrf token", {
     code: "EBADCSRFTOKEN",
@@ -65,7 +65,7 @@ export const csrfSync = ({
   };
 
   const isRequestValid: CsrfRequestValidator = (req) => {
-    const receivedToken =  (req.body && req.body[form]) || req.headers[header];
+    const receivedToken = getTokenFromRequest(req);
     const storedToken = getTokenFromState(req);
 
     return (
@@ -94,6 +94,7 @@ export const csrfSync = ({
     invalidCsrfTokenError,
     csrfSynchronisedProtection,
     generateToken,
+    getTokenFromRequest,
     getTokenFromState,
     isRequestValid,
     storeTokenInState,
