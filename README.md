@@ -164,7 +164,7 @@ const csrfSync = csrfSync({
     req.session.csrfToken = token;
   }, // Used to store the token in state.
   size = 128, // The size of the generated tokens in bits
-}):
+});
 ```
 
 <h3>Processing as a form</h3>
@@ -192,7 +192,17 @@ const csrfSync = csrfSync({
     req.session.csrfToken = token;
   }, // Used to store the token in state.
   size = 128, // The size of the generated tokens in bits
-}):
+});
+```
+
+If using this with something like `express` you would need to provide/configure body parsing middleware before the CSRF protection.
+
+If doing this per route, you would for example:
+
+```js
+app.post('/route/', express.urlencoded({ extended: true }), csrfSynchronisedProtection, async (req, res) => {
+    //process the form as we passed CSRF
+})
 ```
 
 <h2 id="support"> Support</h2>
