@@ -2,7 +2,10 @@ import { assert, expect } from "chai";
 import { Request, Response } from "express";
 import { CsrfRequestToken, CsrfSync } from "../../index.js";
 
-export type OverwriteMockRequestToken = (req: Request, tokenValue: CsrfRequestToken) => void;
+export type OverwriteMockRequestToken = (
+  req: Request,
+  tokenValue: CsrfRequestToken
+) => void;
 
 export default (
   testSuiteName: string,
@@ -15,7 +18,8 @@ export default (
     storeTokenInState,
     revokeToken,
   }: CsrfSync,
-  overwriteMockRequestToken: OverwriteMockRequestToken) => {
+  overwriteMockRequestToken: OverwriteMockRequestToken
+) => {
   describe(testSuiteName, () => {
     const generateMocks = () => {
       const mockRequest = {
@@ -133,4 +137,4 @@ export default (
       });
     });
   });
-}
+};

@@ -173,8 +173,12 @@ If you intend to use this module to protect user submitted forms, then you can u
 
 ```html
 <form action="/transfer.do" method="post">
-<input type="hidden" name="CSRFToken" value="OWY4NmQwODE4ODRjN2Q2NTlhMmZlYWEwYzU1YWQwMTVhM2JmNGYxYjJiMGI4MjJjZDE1ZDZMGYwMGEwOA==">
-[...]
+  <input
+    type="hidden"
+    name="CSRFToken"
+    value="OWY4NmQwODE4ODRjN2Q2NTlhMmZlYWEwYzU1YWQwMTVhM2JmNGYxYjJiMGI4MjJjZDE1ZDZMGYwMGEwOA=="
+  />
+  [...]
 </form>
 ```
 
@@ -200,9 +204,14 @@ If using this with something like `express` you would need to provide/configure 
 If doing this per route, you would for example:
 
 ```js
-app.post('/route/', express.urlencoded({ extended: true }), csrfSynchronisedProtection, async (req, res) => {
+app.post(
+  "/route/",
+  express.urlencoded({ extended: true }),
+  csrfSynchronisedProtection,
+  async (req, res) => {
     //process the form as we passed CSRF
-})
+  }
+);
 ```
 
 <h2 id="support"> Support</h2>

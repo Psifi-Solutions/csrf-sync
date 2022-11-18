@@ -40,7 +40,8 @@ export interface CsrfSync {
 }
 
 export const csrfSync = ({
-  getTokenFromRequest = (req) => req.headers['x-csrf-token'] as CsrfRequestToken,
+  getTokenFromRequest = (req) =>
+    req.headers["x-csrf-token"] as CsrfRequestToken,
   getTokenFromState = (req) => {
     return req.session.csrfToken;
   },
