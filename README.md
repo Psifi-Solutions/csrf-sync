@@ -23,7 +23,7 @@
   <a href="#support">Support</a>
 </p>
 
-<h2 id="background"> Background</h2>
+<h2 id="background">Background</h2>
 
 <p>
   This module intends to provide the necessary pieces required to implement CSRF protection using the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#synchronizer-token-pattern">Synchroniser Token Pattern</a>. This means you will require server side state, if you require stateless CSRF protection, please see <a href="some-url">csrf-csrf</a> for the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#double-submit-cookie">Double-Submit Cookie Pattern</a>.
@@ -85,6 +85,7 @@ const { csrfSYnc } = require("csrf-sync");
 const {
   invalidCsrfTokenError, // This is just for convenience if you plan on making your own middleware.
   generateToken, // Use this in your routes to generate, store, and get a CSRF token.
+  getTokenFromRequest, // use this to retrieve the token submitted by a user
   getTokenFromState, // The default method for retrieving a token from state.
   storeTokenInState, // The default method for storing a token in state.
   revokeToken, // Revokes/deletes a token by calling storeTokenInState(undefined)
@@ -147,6 +148,8 @@ Once a route is protected, you will need to include the most recently generated 
 
 <h2 id="configuration">Configuration</h2>
 
+<h3>Processing as a header</h3>
+
 When creating your csrfSync, you have a few options available for configuration, all of them are optional and have sensible defaults (shown below).
 
 ```js
@@ -154,12 +157,52 @@ const csrfSync = csrfSync({
   getTokenFromState = (req) => {
     return req.session.csrfToken;
   }, // Used to retrieve the token from state.
+  getTokenFromRequest = (req) =>  {
+    return req.headers['x-csrf-token'];
+  }, // Used to retrieve the token submitted by the request from headers
   storeTokenInState = (req, token) => {
     req.session.csrfToken = token;
   }, // Used to store the token in state.
-  header = "x-csrf-token", // The header name where the token is on incoming requests.
   size = 128, // The size of the generated tokens in bits
-}):
+});
+```
+
+<h3>Processing as a form</h3>
+
+If you intend to use this module to protect user submitted forms, then you can use `generateToken` to create a token and pass it to your view, likely via template variables. Then using a hidden form input such as the example from the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#synchronizer-token-pattern">Cheat Sheet</a>.
+
+```html
+<form action="/transfer.do" method="post">
+<input type="hidden" name="CSRFToken" value="OWY4NmQwODE4ODRjN2Q2NTlhMmZlYWEwYzU1YWQwMTVhM2JmNGYxYjJiMGI4MjJjZDE1ZDZMGYwMGEwOA==">
+[...]
+</form>
+```
+
+Upon form submission a `csrfSync` configured as follows can be used to protect the form.
+
+```js
+const csrfSync = csrfSync({
+  getTokenFromState = (req) => {
+    return req.session.csrfToken;
+  }, // Used to retrieve the token from state.
+  getTokenFromRequest = (req) =>  {
+    return req.body['CSRFToken'];
+  }, // Used to retrieve the token submitted by the user in a form
+  storeTokenInState = (req, token) => {
+    req.session.csrfToken = token;
+  }, // Used to store the token in state.
+  size = 128, // The size of the generated tokens in bits
+});
+```
+
+If using this with something like `express` you would need to provide/configure body parsing middleware before the CSRF protection.
+
+If doing this per route, you would for example:
+
+```js
+app.post('/route/', express.urlencoded({ extended: true }), csrfSynchronisedProtection, async (req, res) => {
+    //process the form as we passed CSRF
+})
 ```
 
 <h2 id="support"> Support</h2>

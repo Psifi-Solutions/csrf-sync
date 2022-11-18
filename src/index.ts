@@ -9,6 +9,7 @@ declare module "express-session" {
 }
 
 export type CsrfSyncedToken = string | null | undefined;
+export type CsrfRequestToken = string | undefined;
 export type CsrfTokenStorer = (req: Request, token?: CsrfSyncedToken) => void;
 export type CsrfTokenRetriever = (req: Request) => CsrfSyncedToken;
 export type CsrfTokenGenerator = (req: Request) => string;
@@ -21,9 +22,9 @@ export type CsrfSynchronisedProtection = (
 ) => void;
 
 export interface CsrfSyncOptions {
+  getTokenFromRequest?: CsrfTokenRetriever;
   getTokenFromState?: CsrfTokenRetriever;
   storeTokenInState?: CsrfTokenStorer;
-  header?: string;
   size?: number;
 }
 
@@ -31,6 +32,7 @@ export interface CsrfSync {
   invalidCsrfTokenError: HttpError;
   csrfSynchronisedProtection: CsrfSynchronisedProtection;
   generateToken: CsrfTokenGenerator;
+  getTokenFromRequest: CsrfTokenRetriever;
   getTokenFromState: CsrfTokenRetriever;
   isRequestValid: CsrfRequestValidator;
   storeTokenInState: CsrfTokenStorer;
@@ -38,13 +40,13 @@ export interface CsrfSync {
 }
 
 export const csrfSync = ({
+  getTokenFromRequest = (req) => req.headers['x-csrf-token'] as CsrfRequestToken,
   getTokenFromState = (req) => {
     return req.session.csrfToken;
   },
   storeTokenInState = (req, token) => {
     req.session.csrfToken = token;
   },
-  header = "x-csrf-token",
   size = 128,
 }: CsrfSyncOptions = {}): CsrfSync => {
   const invalidCsrfTokenError = createHttpError(403, "invalid csrf token", {
@@ -63,7 +65,7 @@ export const csrfSync = ({
   };
 
   const isRequestValid: CsrfRequestValidator = (req) => {
-    const receivedToken = req.headers[header];
+    const receivedToken = getTokenFromRequest(req);
     const storedToken = getTokenFromState(req);
 
     return (
@@ -92,6 +94,7 @@ export const csrfSync = ({
     invalidCsrfTokenError,
     csrfSynchronisedProtection,
     generateToken,
+    getTokenFromRequest,
     getTokenFromState,
     isRequestValid,
     storeTokenInState,
