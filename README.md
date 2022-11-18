@@ -23,7 +23,7 @@
   <a href="#support">Support</a>
 </p>
 
-<h2 id="background"> Background</h2>
+<h2 id="background">Background</h2>
 
 <p>
   This module intends to provide the necessary pieces required to implement CSRF protection using the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#synchronizer-token-pattern">Synchroniser Token Pattern</a>. This means you will require server side state, if you require stateless CSRF protection, please see <a href="some-url">csrf-csrf</a> for the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#double-submit-cookie">Double-Submit Cookie Pattern</a>.
@@ -169,7 +169,7 @@ const csrfSync = csrfSync({
 
 <h3>Processing as a form</h3>
 
-In you intend to use this module to protect user submitted forms, then you can use `generateToken` to create a token and pass it to your view, likely via template variables. Then using a hidden form input such as the example from the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#synchronizer-token-pattern">Cheat Sheet</a>.
+If you intend to use this module to protect user submitted forms, then you can use `generateToken` to create a token and pass it to your view, likely via template variables. Then using a hidden form input such as the example from the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#synchronizer-token-pattern">Cheat Sheet</a>.
 
 ```html
 <form action="/transfer.do" method="post">
