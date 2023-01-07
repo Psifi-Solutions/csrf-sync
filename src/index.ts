@@ -8,6 +8,18 @@ declare module "express-session" {
   }
 }
 
+export type RequestMethod =
+  | "GET"
+  | "HEAD"
+  | "PATCH"
+  | "PUT"
+  | "POST"
+  | "DELETE"
+  | "CONNECT"
+  | "OPTIONS"
+  | "TRACE"
+  | "PATCH";
+
 export type CsrfSyncedToken = string | null | undefined;
 export type CsrfRequestToken = string | undefined;
 export type CsrfTokenStorer = (req: Request, token?: CsrfSyncedToken) => void;
@@ -22,6 +34,7 @@ export type CsrfSynchronisedProtection = (
 ) => void;
 
 export interface CsrfSyncOptions {
+  ignoredMethods?: RequestMethod[];
   getTokenFromRequest?: CsrfTokenRetriever;
   getTokenFromState?: CsrfTokenRetriever;
   storeTokenInState?: CsrfTokenStorer;
@@ -40,6 +53,7 @@ export interface CsrfSync {
 }
 
 export const csrfSync = ({
+  ignoredMethods = ["GET", "HEAD", "OPTIONS"],
   getTokenFromRequest = (req) =>
     req.headers["x-csrf-token"] as CsrfRequestToken,
   getTokenFromState = (req) => {
@@ -50,6 +64,8 @@ export const csrfSync = ({
   },
   size = 128,
 }: CsrfSyncOptions = {}): CsrfSync => {
+  const ignoredMethodsSet = new Set(ignoredMethods);
+
   const invalidCsrfTokenError = createHttpError(403, "invalid csrf token", {
     code: "EBADCSRFTOKEN",
   });
@@ -81,14 +97,18 @@ export const csrfSync = ({
     res,
     next
   ) => {
-    const isCsrfValid = isRequestValid(req);
-    if (!isCsrfValid) {
-      return next(invalidCsrfTokenError);
+    if (ignoredMethodsSet.has(req.method as RequestMethod)) {
+      next();
+    } else {
+      const isCsrfValid = isRequestValid(req);
+      if (!isCsrfValid) {
+        return next(invalidCsrfTokenError);
+      }
+
+      revokeToken(req);
+
+      next();
     }
-
-    revokeToken(req);
-
-    next();
   };
 
   return {

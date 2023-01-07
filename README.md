@@ -106,7 +106,7 @@ const myProtectedRoute = (req, res) =>
   res.json({ unpopularOpinion: "Game of Thrones was amazing" });
 ```
 
-You can also put the token into the context of a templated HTML response. Just make sure you register this route before registering the middleware so you don't block yourself from getting a token.
+You can also put the token into the context of a templated HTML response. Note in this case, the route is a get request, and these request types are not protected (ignored request method), as they do not need to be protected so long as the route is not exposing any sensitive actions.
 
 ```js
 // Make sure your session middleware is registered before these
@@ -117,31 +117,33 @@ express.use(csrfSynchronisedProtection);
 ```
 
 <p>
-  In most cases, it's unlikely you want to protect everything, so you can protect your routes on a case-to-case basis:
+  You can also protect your routes on a case-to-case basis:
 </p>
 
 ```js
 app.get("/secret-stuff", csrfSynchronisedProtection, myProtectedRoute);
 ```
 
-Or you can conditionally wrap the middleware yourself, like so (basic example):
+<p>
+  Or you can conditionally wrap the middleware yourself, like so (basic example):
+<p>
 
 ```js
-const myCsrfProtectionMiddleware = () => {
-  const ignoremethods = new Set(["GET", "HEAD", "OPTIONS"]);
-  return (req, res, next) => {
-    if (ignoreMethods.has(req.method)) {
-      next();
-    } else {
-      csrfSynchronisedProtection(req, res, next);
-    }
-  };
+const myCsrfProtectionMiddleware = (req, res, next) => {
+  // Some method to determine whether we want CSRF protection to apply
+  if (isCsrfProtectionNeeded(req)) {
+    // protect with CSRF
+    csrfSynchronisedProtection(req, res, next);
+  } else {
+    // Don't protect with CSRF
+    next();
+  }
 };
-express.use(myCsrfProtectionMiddleware());
+express.use(myCsrfProtectionMiddleware);
 ```
 
 <p>
-And now this will only require a CSRF token to be present for requests that aren't <code>GET</code>, <code>HEAD</code>, or <code>OPTIONS</code>.
+  And now this will only require a CSRF token to be present for requests where <code>isCsrfProtectionNeeded(req)</code> evaluates to false.
 </p>
 
 Once a route is protected, you will need to include the most recently generated token in the `x-csrf-token` request header, otherwise you'll receive a `403 - ForbiddenError: invalid csrf token`.
@@ -154,6 +156,7 @@ When creating your csrfSync, you have a few options available for configuration,
 
 ```js
 const csrfSync = csrfSync({
+  ignoredMethods = ["GET", "HEAD", "OPTIONS"],
   getTokenFromState = (req) => {
     return req.session.csrfToken;
   }, // Used to retrieve the token from state.
@@ -214,7 +217,7 @@ app.post(
 );
 ```
 
-<h2 id="support"> Support</h2>
+<h2 id="support">Support</h2>
 
 <ul>
   <li>
