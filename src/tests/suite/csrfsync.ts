@@ -26,6 +26,7 @@ export default (
         session: {
           csrfToken: undefined,
         },
+        method: "POST",
         headers: {},
         body: {},
       } as unknown as Request;
@@ -36,6 +37,7 @@ export default (
       };
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const next = (err: any) => {
       if (err) throw err;
     };
@@ -76,7 +78,7 @@ export default (
         ).to.throw(invalidCsrfTokenError.message);
       };
 
-      it("should call next with an error when no token set", () => {
+      it("should call next with an error when no token set for protected method", () => {
         const { mockRequest, mockResponse } = generateMocks();
 
         assert.isUndefined(getTokenFromRequest(mockRequest));
@@ -85,7 +87,7 @@ export default (
         assertThrowsInvalidCsrfError(mockRequest, mockResponse);
       });
 
-      it("should call next with an error when no token received", () => {
+      it("should call next with an error when no token received for protected method", () => {
         const { mockRequest, mockResponse } = generateMocks();
         generateToken(mockRequest);
         overwriteMockRequestToken(mockRequest, undefined);
@@ -96,7 +98,7 @@ export default (
         assertThrowsInvalidCsrfError(mockRequest, mockResponse);
       });
 
-      it("should call next with an error when tokens do not match", () => {
+      it("should call next with an error when tokens do not match for protected method", () => {
         const { mockRequest, mockResponse } = generateMocks();
         generateToken(mockRequest);
         overwriteMockRequestToken(mockRequest, TEST_TOKEN);
@@ -109,7 +111,7 @@ export default (
         assertThrowsInvalidCsrfError(mockRequest, mockResponse);
       });
 
-      it("should call next with an error when token is revoked", () => {
+      it("should call next with an error when token is revoked for protected method", () => {
         const { mockRequest, mockResponse } = generateMocks();
         const token = generateToken(mockRequest);
         overwriteMockRequestToken(mockRequest, token);
@@ -126,7 +128,7 @@ export default (
         assertThrowsInvalidCsrfError(mockRequest, mockResponse);
       });
 
-      it("should succeed when tokens match", () => {
+      it("should succeed when tokens match for protected method", () => {
         const { mockRequest, mockResponse } = generateMocks();
         const token = generateToken(mockRequest);
         overwriteMockRequestToken(mockRequest, token);
@@ -134,6 +136,14 @@ export default (
         expect(() =>
           csrfSynchronisedProtection(mockRequest, mockResponse, next)
         ).to.not.throw();
+      });
+
+      it("should succeed with no token for ignored method", () => {
+        const { mockRequest, mockResponse } = generateMocks();
+        mockRequest.method = "GET";
+        expect(() => {
+          csrfSynchronisedProtection(mockRequest, mockResponse, next);
+        }).to.not.throw();
       });
     });
   });
