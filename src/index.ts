@@ -105,8 +105,6 @@ export const csrfSync = ({
         return next(invalidCsrfTokenError);
       }
 
-      revokeToken(req);
-
       next();
     }
   };
