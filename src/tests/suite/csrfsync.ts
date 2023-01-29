@@ -149,7 +149,7 @@ export default (
       it("should generate a token if none exists and overwrite true", () => {
         const { mockRequest } = generateMocks();
         const initialToken = generateToken(mockRequest, true);
-        
+
         expect(initialToken).to.not.be.undefined;
       });
 
@@ -159,14 +159,14 @@ export default (
         const secondaryToken = generateToken(mockRequest);
 
         assert.equal(initialToken, secondaryToken);
-      })
+      });
     });
 
     it("should overwrite when overwrite true", () => {
       const { mockRequest } = generateMocks();
       const initialToken = generateToken(mockRequest);
       const secondaryToken = generateToken(mockRequest, true);
-      
+
       assert.notEqual(initialToken, secondaryToken);
     });
   });

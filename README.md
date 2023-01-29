@@ -214,13 +214,9 @@ If using this with something like `express` you would need to provide/configure 
 If doing this per route, you would for example:
 
 ```js
-app.post(
-  "/route/",
-  csrfSynchronisedProtection,
-  async (req, res) => {
-    //process the form as we passed CSRF
-  }
-);
+app.post("/route/", csrfSynchronisedProtection, async (req, res) => {
+  //process the form as we passed CSRF
+});
 ```
 
 <h3>Safely Using both body and header</h3>
@@ -250,5 +246,4 @@ const csrfSyncProtection = csrfSync({
   </li>
 </ul>
 
-
-  <a href="https://www.buymeacoffee.com/psibean" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
+<a href="https://www.buymeacoffee.com/psibean" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>

@@ -71,7 +71,7 @@ export const csrfSync = ({
   });
 
   const generateToken: CsrfTokenGenerator = (req, overwrite = false) => {
-    if (!overwrite && typeof getTokenFromState(req) === 'string') {
+    if (!overwrite && typeof getTokenFromState(req) === "string") {
       return getTokenFromState(req) as string;
     }
 
