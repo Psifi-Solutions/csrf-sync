@@ -11,9 +11,6 @@
   <a href="https://discord.gg/JddkbuSnUU">
     <img src="https://discordapp.com/api/guilds/643569902866923550/widget.png?style=shield">
   </a>
-  <a href="https://patreon.com/Psibean">
-    <img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3DPsibean%26type%3Dpatrons&style=flat" />
-  </a>
 </p>
 
 <p align="center">
@@ -78,7 +75,7 @@ npm install express express-session csrf-sync
 // ESM
 import { csrfSync } from "csrf-sync";
 // CommonJS
-const { csrfSYnc } = require("csrf-sync");
+const { csrfSync } = require("csrf-sync");
 ```
 
 ```js
@@ -148,6 +145,18 @@ express.use(myCsrfProtectionMiddleware);
 
 Once a route is protected, you will need to include the most recently generated token in the `x-csrf-token` request header, otherwise you'll receive a `403 - ForbiddenError: invalid csrf token`.
 
+<h3>generateToken</h3>
+
+<p>By default if a token already exists on the session object, generateToken <b>will not overwrite it</b>, it will simply return the existing token. If you wish to force a token generation, you can use the second parameter:<p>
+
+```js
+generateToken(req, true); // This will force a new token to be generated, even if one already exists
+```
+
+<h3>revokeToken</h3>
+
+By default tokens <b>will NOT be revoked</b>, if you want or need to revoke a token you should use this method to do so. Note that if you call <code>generateToken</code> with <code>overwrite</code> set to true, this will revoke the any existing token and only the new one will be valid.
+
 <h2 id="configuration">Configuration</h2>
 
 <h3>Processing as a header</h3>
@@ -155,7 +164,7 @@ Once a route is protected, you will need to include the most recently generated 
 When creating your csrfSync, you have a few options available for configuration, all of them are optional and have sensible defaults (shown below).
 
 ```js
-const csrfSync = csrfSync({
+const csrfSyncProtection = csrfSync({
   ignoredMethods = ["GET", "HEAD", "OPTIONS"],
   getTokenFromState = (req) => {
     return req.session.csrfToken;
@@ -168,6 +177,11 @@ const csrfSync = csrfSync({
   }, // Used to store the token in state.
   size = 128, // The size of the generated tokens in bits
 });
+
+// NOTE THE VALUES ABOVE ARE THE DEFAULTS.
+// THE ABOVE IS THE SAME AS DOING:
+
+const csrfSyncProtection = csrfSync();
 ```
 
 <h3>Processing as a form</h3>
@@ -188,17 +202,10 @@ If you intend to use this module to protect user submitted forms, then you can u
 Upon form submission a `csrfSync` configured as follows can be used to protect the form.
 
 ```js
-const csrfSync = csrfSync({
-  getTokenFromState = (req) => {
-    return req.session.csrfToken;
-  }, // Used to retrieve the token from state.
+const csrfSyncProtection = csrfSync({
   getTokenFromRequest = (req) =>  {
     return req.body['CSRFToken'];
   }, // Used to retrieve the token submitted by the user in a form
-  storeTokenInState = (req, token) => {
-    req.session.csrfToken = token;
-  }, // Used to store the token in state.
-  size = 128, // The size of the generated tokens in bits
 });
 ```
 
@@ -209,12 +216,27 @@ If doing this per route, you would for example:
 ```js
 app.post(
   "/route/",
-  express.urlencoded({ extended: true }),
   csrfSynchronisedProtection,
   async (req, res) => {
     //process the form as we passed CSRF
   }
 );
+```
+
+<h3>Safely Using both body and header</h3>
+
+```js
+const csrfSyncProtection = csrfSync({
+  getTokenFromRequest = (req) =>  {
+    // If the incoming request is a multipart content type
+    // then get the token from the body.
+    if (req.is('multipart')) {
+      return req.body['CSRFToken'];
+    }
+    // Otherwise use the header for all other request types
+    return req.headers['x-csrf-token'];
+  },
+});
 ```
 
 <h2 id="support">Support</h2>
@@ -227,3 +249,6 @@ app.post(
     Pledge your support through the <a href="">Patreon</a>
   </li>
 </ul>
+
+
+  <a href="https://www.buymeacoffee.com/psibean" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
