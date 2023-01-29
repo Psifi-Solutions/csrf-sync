@@ -24,7 +24,7 @@ export type CsrfSyncedToken = string | null | undefined;
 export type CsrfRequestToken = string | undefined;
 export type CsrfTokenStorer = (req: Request, token?: CsrfSyncedToken) => void;
 export type CsrfTokenRetriever = (req: Request) => CsrfSyncedToken;
-export type CsrfTokenGenerator = (req: Request) => string;
+export type CsrfTokenGenerator = (req: Request, overwrite?: boolean) => string;
 export type CsrfTokenRevoker = (req: Request) => void;
 export type CsrfRequestValidator = (req: Request) => boolean;
 export type CsrfSynchronisedProtection = (
@@ -70,7 +70,11 @@ export const csrfSync = ({
     code: "EBADCSRFTOKEN",
   });
 
-  const generateToken: CsrfTokenGenerator = (req) => {
+  const generateToken: CsrfTokenGenerator = (req, overwrite = false) => {
+    if (!overwrite && typeof getTokenFromState(req) === 'string') {
+      return getTokenFromState(req) as string;
+    }
+
     const newToken = randomBytes(size).toString("hex");
     storeTokenInState(req, newToken);
 
