@@ -11,7 +11,7 @@
   "author": "psibean",
   "license": "ISC",
   "dependencies": {
-    "csrf-sync": "^4.0.0",
+    "csrf-sync": "^4.0.1",
     "express": "^4.18.2",
     "express-session": "^1.17.3"
   }
