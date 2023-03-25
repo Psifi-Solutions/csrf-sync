@@ -169,5 +169,27 @@ export default (
 
       assert.notEqual(initialToken, secondaryToken);
     });
+
+    it("should attach generateToken to request via csrfToken", () => {
+      const { mockRequest, mockResponse } = generateMocks();
+      mockRequest.method = "GET";
+
+      assert.isUndefined(mockRequest.csrfToken);
+      csrfSynchronisedProtection(mockRequest, mockResponse, next);
+      assert.isFunction(mockRequest.csrfToken);
+      let reqGeneratedToken;
+
+      if (mockRequest.csrfToken) {
+        reqGeneratedToken = mockRequest.csrfToken();
+      }
+
+      assert.equal(reqGeneratedToken, generateToken(mockRequest, false));
+      overwriteMockRequestToken(mockRequest, reqGeneratedToken);
+      mockRequest.method = "POST";
+
+      expect(() => {
+        csrfSynchronisedProtection(mockRequest, mockResponse, next);
+      }).to.not.throw();
+    });
   });
 };

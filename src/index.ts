@@ -8,6 +8,12 @@ declare module "express-session" {
   }
 }
 
+declare module "express-serve-static-core" {
+  export interface Request {
+    csrfToken?: (overwrite?: boolean) => ReturnType<CsrfTokenGenerator>;
+  }
+}
+
 export type RequestMethod =
   | "GET"
   | "HEAD"
@@ -101,6 +107,8 @@ export const csrfSync = ({
     res,
     next
   ) => {
+    req.csrfToken = (overwrite) => generateToken(req, overwrite);
+
     if (ignoredMethodsSet.has(req.method as RequestMethod)) {
       next();
     } else {

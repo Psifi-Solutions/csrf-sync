@@ -153,6 +153,13 @@ Once a route is protected, you will need to include the most recently generated 
 generateToken(req, true); // This will force a new token to be generated, even if one already exists
 ```
 
+<p>Instead of importing and using <code>generateToken</code>, you can also use <code>req.csrfToken</code> any time after the <code>csrfSynchronisedProtection` middleware has executed on your incoming request.</p>
+
+```js
+req.csrfToken(); // same as generateToken(req) and generateToken(req, false);
+req.csrfToken(true); // same as generateToken(req, true);
+```
+
 <h3>revokeToken</h3>
 
 By default tokens <b>will NOT be revoked</b>, if you want or need to revoke a token you should use this method to do so. Note that if you call <code>generateToken</code> with <code>overwrite</code> set to true, this will revoke the any existing token and only the new one will be valid.
@@ -234,6 +241,10 @@ const csrfSyncProtection = csrfSync({
   },
 });
 ```
+
+<h2>Using asynchronously</h2>
+
+<p>csrf-sync itself will not support promises or async, <b>however</b> there is a way around this. If your csrf t<p>
 
 <h2 id="support">Support</h2>
 
