@@ -209,8 +209,8 @@ If you intend to use this module to protect user submitted forms, then you can u
 Upon form submission a `csrfSync` configured as follows can be used to protect the form.
 
 ```js
-const csrfSyncProtection = csrfSync({
-  getTokenFromRequest = (req) =>  {
+const { csrfSynchronisedProtection } = csrfSync({
+  getTokenFromRequest: (req) =>  {
     return req.body['CSRFToken'];
   }, // Used to retrieve the token submitted by the user in a form
 });
@@ -229,8 +229,8 @@ app.post("/route/", csrfSynchronisedProtection, async (req, res) => {
 <h3>Safely Using both body and header</h3>
 
 ```js
-const csrfSyncProtection = csrfSync({
-  getTokenFromRequest = (req) =>  {
+const { csrfSynchronisedProtection } = csrfSync({
+  getTokenFromRequest: (req) =>  {
     // If the incoming request is a multipart content type
     // then get the token from the body.
     if (req.is('multipart')) {
