@@ -153,7 +153,7 @@ Once a route is protected, you will need to include the most recently generated 
 generateToken(req, true); // This will force a new token to be generated, even if one already exists
 ```
 
-<p>Instead of importing and using <code>generateToken</code>, you can also use <code>req.csrfToken</code> any time after the <code>csrfSynchronisedProtection` middleware has executed on your incoming request.</p>
+<p>Instead of importing and using <code>generateToken</code>, you can also use <code>req.csrfToken</code> any time after the <code>csrfSynchronisedProtection</code> middleware has executed on your incoming request.</p>
 
 ```js
 req.csrfToken(); // same as generateToken(req) and generateToken(req, false);
