@@ -244,7 +244,22 @@ const { csrfSynchronisedProtection } = csrfSync({
 
 <h2>Using asynchronously</h2>
 
-<p>csrf-sync itself will not support promises or async, <b>however</b> there is a way around this. If your csrf t<p>
+<p>csrf-sync itself will not support promises or async, <b>however</b> there is a way around this. If your csrf token is stored externally and needs to be retrieved asynchronously, you can register an asynchronous middleware first, which exposes the token.</p>
+
+```js
+(req, res, next) => {
+    getCsrfTokenAsync(req).then(token => {
+        req.asyncCsrfToken = token;
+        next();
+    }).catch(error => next(error));
+}
+```
+
+<p>And in this example, your `getTokenFromRequest` would look like this:</p>
+
+```js
+req => req.asyncCsrfToken
+```
 
 <h2 id="support">Support</h2>
 
