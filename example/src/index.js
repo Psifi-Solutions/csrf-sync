@@ -11,7 +11,7 @@ app.use(
   session({
     // Don't do this, use a cryptographically random generated string
     secret: "test",
-  })
+  }),
 );
 
 const { generateToken, csrfSynchronisedProtection } = csrfSync();

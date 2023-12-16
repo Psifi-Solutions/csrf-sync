@@ -35,7 +35,7 @@ export type CsrfRequestValidator = (req: Request) => boolean;
 export type CsrfSynchronisedProtection = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => void;
 
 export interface CsrfSyncOptions {
@@ -104,7 +104,7 @@ export const csrfSync = ({
   const csrfSynchronisedProtection: CsrfSynchronisedProtection = (
     req,
     res,
-    next
+    next,
   ) => {
     req.csrfToken = (overwrite) => generateToken(req, overwrite);
 

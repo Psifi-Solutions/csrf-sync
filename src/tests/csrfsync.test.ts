@@ -15,5 +15,5 @@ csrfSyncTestSuite(
   csrfSync({
     getTokenFromRequest: (req) => req.body.csrfToken as CsrfRequestToken,
   }),
-  (req, tokenValue) => (req.body.csrfToken = tokenValue)
+  (req, tokenValue) => (req.body.csrfToken = tokenValue),
 );
