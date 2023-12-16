@@ -210,8 +210,8 @@ Upon form submission a `csrfSync` configured as follows can be used to protect t
 
 ```js
 const { csrfSynchronisedProtection } = csrfSync({
-  getTokenFromRequest: (req) =>  {
-    return req.body['CSRFToken'];
+  getTokenFromRequest: (req) => {
+    return req.body["CSRFToken"];
   }, // Used to retrieve the token submitted by the user in a form
 });
 ```
@@ -230,14 +230,14 @@ app.post("/route/", csrfSynchronisedProtection, async (req, res) => {
 
 ```js
 const { csrfSynchronisedProtection } = csrfSync({
-  getTokenFromRequest: (req) =>  {
+  getTokenFromRequest: (req) => {
     // If the incoming request is a multipart content type
     // then get the token from the body.
-    if (req.is('multipart')) {
-      return req.body['CSRFToken'];
+    if (req.is("multipart")) {
+      return req.body["CSRFToken"];
     }
     // Otherwise use the header for all other request types
-    return req.headers['x-csrf-token'];
+    return req.headers["x-csrf-token"];
   },
 });
 ```
@@ -248,17 +248,19 @@ const { csrfSynchronisedProtection } = csrfSync({
 
 ```js
 (req, res, next) => {
-    getCsrfTokenAsync(req).then(token => {
-        req.asyncCsrfToken = token;
-        next();
-    }).catch(error => next(error));
-}
+  getCsrfTokenAsync(req)
+    .then((token) => {
+      req.asyncCsrfToken = token;
+      next();
+    })
+    .catch((error) => next(error));
+};
 ```
 
 <p>And in this example, your `getTokenFromRequest` would look like this:</p>
 
 ```js
-req => req.asyncCsrfToken
+(req) => req.asyncCsrfToken;
 ```
 
 <h2 id="support">Support</h2>
