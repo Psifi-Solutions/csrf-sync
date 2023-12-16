@@ -4,7 +4,7 @@ import { CsrfRequestToken, CsrfSync } from "../../index.js";
 
 export type OverwriteMockRequestToken = (
   req: Request,
-  tokenValue: CsrfRequestToken
+  tokenValue: CsrfRequestToken,
 ) => void;
 
 export default (
@@ -18,7 +18,7 @@ export default (
     storeTokenInState,
     revokeToken,
   }: CsrfSync,
-  overwriteMockRequestToken: OverwriteMockRequestToken
+  overwriteMockRequestToken: OverwriteMockRequestToken,
 ) => {
   describe(testSuiteName, () => {
     const generateMocks = () => {
@@ -63,7 +63,7 @@ export default (
         // So that getTokenFromState can be used reliably in the tests.
         assert.equal(
           mockRequest.session.csrfToken,
-          getTokenFromState(mockRequest)
+          getTokenFromState(mockRequest),
         );
       });
     });
@@ -71,10 +71,10 @@ export default (
     describe("middleware", () => {
       const assertThrowsInvalidCsrfError = (
         mockRequest: Request,
-        mockResponse: Response
+        mockResponse: Response,
       ) => {
         expect(() =>
-          csrfSynchronisedProtection(mockRequest, mockResponse, next)
+          csrfSynchronisedProtection(mockRequest, mockResponse, next),
         ).to.throw(invalidCsrfTokenError.message);
       };
 
@@ -105,7 +105,7 @@ export default (
 
         assert.notEqual(
           getTokenFromRequest(mockRequest),
-          getTokenFromState(mockRequest)
+          getTokenFromState(mockRequest),
         );
 
         assertThrowsInvalidCsrfError(mockRequest, mockResponse);
@@ -119,7 +119,7 @@ export default (
         expect(mockRequest.session.csrfToken).to.not.be.undefined;
         assert.equal(
           getTokenFromRequest(mockRequest),
-          getTokenFromState(mockRequest)
+          getTokenFromState(mockRequest),
         );
 
         revokeToken(mockRequest);
@@ -134,7 +134,7 @@ export default (
         overwriteMockRequestToken(mockRequest, token);
 
         expect(() =>
-          csrfSynchronisedProtection(mockRequest, mockResponse, next)
+          csrfSynchronisedProtection(mockRequest, mockResponse, next),
         ).to.not.throw();
       });
 
