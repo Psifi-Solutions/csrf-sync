@@ -23,8 +23,7 @@ export type RequestMethod =
   | "DELETE"
   | "CONNECT"
   | "OPTIONS"
-  | "TRACE"
-  | "PATCH";
+  | "TRACE";
 
 export type CsrfSyncedToken = string | null | undefined;
 export type CsrfRequestToken = string | undefined;
