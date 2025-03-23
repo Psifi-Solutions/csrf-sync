@@ -166,6 +166,29 @@ By default tokens <b>will NOT be revoked</b>, if you want or need to revoke a to
 
 <h2 id="configuration">Configuration</h2>
 
+<h3 id="configuration-error-config">errorConfig</h3>
+
+```ts
+statusCode?: number;
+message?: string;
+code?: string | undefined;
+```
+
+<p>
+  <b>Optional<br />
+  Default:</b>
+</p>
+
+```ts
+{
+  statusCode: 403,
+  message: "invalid csrf token",
+  code: "EBADCSRFTOKEN"
+}
+```
+
+Used to customise the error response <code>statusCode</code>, the contained error <code>message</code>, and it's <code>code</code>, the error is constructed via <code>createHttpError</code>. The default values match that of <code>csurf</code> for convenience.
+
 <h3>Processing as a header</h3>
 
 When creating your csrfSync, you have a few options available for configuration, all of them are optional and have sensible defaults (shown below).
