@@ -32,6 +32,12 @@ export type CsrfTokenRetriever = (req: Request) => CsrfSyncedToken;
 export type CsrfTokenGenerator = (req: Request, overwrite?: boolean) => string;
 export type CsrfTokenRevoker = (req: Request) => void;
 export type CsrfRequestValidator = (req: Request) => boolean;
+export type CsrfErrorConfig = {
+  statusCode: number;
+  message: string;
+  code: string | undefined;
+};
+export type CsrfErrorConfigOptions = Partial<CsrfErrorConfig>;
 export type CsrfSynchronisedProtection = (
   req: Request,
   res: Response,
@@ -44,6 +50,7 @@ export interface CsrfSyncOptions {
   getTokenFromState?: CsrfTokenRetriever;
   storeTokenInState?: CsrfTokenStorer;
   size?: number;
+  errorConfig?: CsrfErrorConfigOptions;
 }
 
 export interface CsrfSync {
@@ -68,11 +75,16 @@ export const csrfSync = ({
     req.session.csrfToken = token;
   },
   size = 128,
+  errorConfig: {
+    statusCode = 403,
+    message = "invalid csrf token",
+    code = "EBADCSRFTOKEN",
+  } = {},
 }: CsrfSyncOptions = {}): CsrfSync => {
   const ignoredMethodsSet = new Set(ignoredMethods);
 
-  const invalidCsrfTokenError = createHttpError(403, "invalid csrf token", {
-    code: "EBADCSRFTOKEN",
+  const invalidCsrfTokenError = createHttpError(statusCode, message, {
+    code,
   });
 
   const generateToken: CsrfTokenGenerator = (req, overwrite = false) => {

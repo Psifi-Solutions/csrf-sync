@@ -11,9 +11,14 @@ csrfSyncTestSuite("csrfSync default config", csrfSync(), (req, tokenValue) => {
 });
 
 csrfSyncTestSuite(
-  "csrfSync with body based token",
+  "csrfSync with body based token and custom error",
   csrfSync({
     getTokenFromRequest: (req) => req.body.csrfToken as CsrfRequestToken,
+    errorConfig: {
+      statusCode: 400,
+      message: "bad token",
+      code: "BAD",
+    },
   }),
   (req, tokenValue) => (req.body.csrfToken = tokenValue),
 );
