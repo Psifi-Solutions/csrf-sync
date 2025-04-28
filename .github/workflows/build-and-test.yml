@@ -15,28 +15,23 @@ permissions:
 
 jobs:
   lint:
-    name: Run linters
+    name: Lint
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v2
+      - name: Checkout csrf-csrf
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v1
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 22
 
-      - name: Install Node.js dependencies
-        run: npm ci
-
-      - name: Run linters
-        uses: wearerequired/lint-action@v2
-        with:
-          eslint: true
-          prettier: true
-          commit: false
-          eslint_extensions: js,ts
+      - name: Setup Biome CLI
+        uses: biomejs/setup-biome@v2
+        
+      - name: Run Biome
+        run: biome ci
 
   build:
     runs-on: ubuntu-latest

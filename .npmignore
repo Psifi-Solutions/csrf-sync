@@ -3,6 +3,5 @@ example/
 .git*
 .vscode
 .src
-.eslint*
 package-lock.json
 tsconfig.json

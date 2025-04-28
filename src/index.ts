@@ -1,5 +1,5 @@
+import { randomBytes } from "node:crypto";
 import type { NextFunction, Request, Response } from "express";
-import { randomBytes } from "crypto";
 import createHttpError, { type HttpError } from "http-errors";
 
 declare module "express-session" {
@@ -14,16 +14,7 @@ declare module "express-serve-static-core" {
   }
 }
 
-export type RequestMethod =
-  | "GET"
-  | "HEAD"
-  | "PATCH"
-  | "PUT"
-  | "POST"
-  | "DELETE"
-  | "CONNECT"
-  | "OPTIONS"
-  | "TRACE";
+export type RequestMethod = "GET" | "HEAD" | "PATCH" | "PUT" | "POST" | "DELETE" | "CONNECT" | "OPTIONS" | "TRACE";
 
 export type CsrfSyncedToken = string | null | undefined;
 export type CsrfRequestToken = string | undefined;
@@ -38,11 +29,7 @@ export type CsrfErrorConfig = {
   code: string | undefined;
 };
 export type CsrfErrorConfigOptions = Partial<CsrfErrorConfig>;
-export type CsrfSynchronisedProtection = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => void;
+export type CsrfSynchronisedProtection = (req: Request, res: Response, next: NextFunction) => void;
 
 export interface CsrfSyncOptions {
   ignoredMethods?: RequestMethod[];
@@ -66,8 +53,7 @@ export interface CsrfSync {
 
 export const csrfSync = ({
   ignoredMethods = ["GET", "HEAD", "OPTIONS"],
-  getTokenFromRequest = (req) =>
-    req.headers["x-csrf-token"] as CsrfRequestToken,
+  getTokenFromRequest = (req) => req.headers["x-csrf-token"] as CsrfRequestToken,
   getTokenFromState = (req) => {
     return req.session.csrfToken;
   },
@@ -75,11 +61,7 @@ export const csrfSync = ({
     req.session.csrfToken = token;
   },
   size = 128,
-  errorConfig: {
-    statusCode = 403,
-    message = "invalid csrf token",
-    code = "EBADCSRFTOKEN",
-  } = {},
+  errorConfig: { statusCode = 403, message = "invalid csrf token", code = "EBADCSRFTOKEN" } = {},
 }: CsrfSyncOptions = {}): CsrfSync => {
   const ignoredMethodsSet = new Set(ignoredMethods);
 
@@ -106,18 +88,10 @@ export const csrfSync = ({
     const receivedToken = getTokenFromRequest(req);
     const storedToken = getTokenFromState(req);
 
-    return (
-      typeof receivedToken === "string" &&
-      typeof storedToken === "string" &&
-      receivedToken === storedToken
-    );
+    return typeof receivedToken === "string" && typeof storedToken === "string" && receivedToken === storedToken;
   };
 
-  const csrfSynchronisedProtection: CsrfSynchronisedProtection = (
-    req,
-    res,
-    next,
-  ) => {
+  const csrfSynchronisedProtection: CsrfSynchronisedProtection = (req, res, next) => {
     req.csrfToken = (overwrite) => generateToken(req, overwrite);
 
     if (ignoredMethodsSet.has(req.method as RequestMethod)) {
