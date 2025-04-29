@@ -1,11 +1,8 @@
 import { assert, expect } from "chai";
-import { Request, Response } from "express";
-import { CsrfRequestToken, CsrfSync } from "../../index.js";
+import type { Request, Response } from "express";
+import type { CsrfRequestToken, CsrfSync } from "../../index.js";
 
-export type OverwriteMockRequestToken = (
-  req: Request,
-  tokenValue: CsrfRequestToken,
-) => void;
+export type OverwriteMockRequestToken = (req: Request, tokenValue: CsrfRequestToken) => void;
 
 export default (
   testSuiteName: string,
@@ -37,7 +34,6 @@ export default (
       };
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const next = (err: any) => {
       if (err) throw err;
     };
@@ -61,21 +57,15 @@ export default (
         generateToken(mockRequest);
         // This is confirming the 2 values are the same
         // So that getTokenFromState can be used reliably in the tests.
-        assert.equal(
-          mockRequest.session.csrfToken,
-          getTokenFromState(mockRequest),
-        );
+        assert.equal(mockRequest.session.csrfToken, getTokenFromState(mockRequest));
       });
     });
 
     describe("middleware", () => {
-      const assertThrowsInvalidCsrfError = (
-        mockRequest: Request,
-        mockResponse: Response,
-      ) => {
-        expect(() =>
-          csrfSynchronisedProtection(mockRequest, mockResponse, next),
-        ).to.throw(invalidCsrfTokenError.message);
+      const assertThrowsInvalidCsrfError = (mockRequest: Request, mockResponse: Response) => {
+        expect(() => csrfSynchronisedProtection(mockRequest, mockResponse, next)).to.throw(
+          invalidCsrfTokenError.message,
+        );
       };
 
       it("should call next with an error when no token set for protected method", () => {
@@ -103,10 +93,7 @@ export default (
         generateToken(mockRequest);
         overwriteMockRequestToken(mockRequest, TEST_TOKEN);
 
-        assert.notEqual(
-          getTokenFromRequest(mockRequest),
-          getTokenFromState(mockRequest),
-        );
+        assert.notEqual(getTokenFromRequest(mockRequest), getTokenFromState(mockRequest));
 
         assertThrowsInvalidCsrfError(mockRequest, mockResponse);
       });
@@ -117,10 +104,7 @@ export default (
         overwriteMockRequestToken(mockRequest, token);
 
         expect(mockRequest.session.csrfToken).to.not.be.undefined;
-        assert.equal(
-          getTokenFromRequest(mockRequest),
-          getTokenFromState(mockRequest),
-        );
+        assert.equal(getTokenFromRequest(mockRequest), getTokenFromState(mockRequest));
 
         revokeToken(mockRequest);
 
@@ -133,9 +117,7 @@ export default (
         const token = generateToken(mockRequest);
         overwriteMockRequestToken(mockRequest, token);
 
-        expect(() =>
-          csrfSynchronisedProtection(mockRequest, mockResponse, next),
-        ).to.not.throw();
+        expect(() => csrfSynchronisedProtection(mockRequest, mockResponse, next)).to.not.throw();
       });
 
       it("should succeed with no token for ignored method", () => {
@@ -177,11 +159,7 @@ export default (
       assert.isUndefined(mockRequest.csrfToken);
       csrfSynchronisedProtection(mockRequest, mockResponse, next);
       assert.isFunction(mockRequest.csrfToken);
-      let reqGeneratedToken;
-
-      if (mockRequest.csrfToken) {
-        reqGeneratedToken = mockRequest.csrfToken();
-      }
+      const reqGeneratedToken = mockRequest.csrfToken!();
 
       assert.equal(reqGeneratedToken, generateToken(mockRequest, false));
       overwriteMockRequestToken(mockRequest, reqGeneratedToken);

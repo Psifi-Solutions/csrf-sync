@@ -1,9 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-import { CsrfRequestToken, csrfSync } from "../index.js";
+import { type CsrfRequestToken, csrfSync } from "../index.js";
 import csrfSyncTestSuite from "./suite/csrfsync";
 
 csrfSyncTestSuite("csrfSync default config", csrfSync(), (req, tokenValue) => {
@@ -20,5 +15,7 @@ csrfSyncTestSuite(
       code: "BAD",
     },
   }),
-  (req, tokenValue) => (req.body.csrfToken = tokenValue),
+  (req, tokenValue) => {
+    req.body.csrfToken = tokenValue;
+  },
 );
