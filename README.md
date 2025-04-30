@@ -8,8 +8,12 @@
   <a href="https://www.npmjs.com/package/csrf-sync">
     <img src="https://img.shields.io/npm/v/csrf-sync" />
   </a>
+  <a href='https://coveralls.io/github/Psifi-Solutions/csrf-sync?branch=main'><img src='https://coveralls.io/repos/github/Psifi-Solutions/csrf-sync/badge.svg?branch=main' alt='Coverage Status' /></a>
   <a href="https://discord.gg/JddkbuSnUU">
     <img src="https://discordapp.com/api/guilds/643569902866923550/widget.png?style=shield">
+  </a>
+    <a href="https://ko-fi.com/G2G813S7A0">
+    <img width="150px" src="https://ko-fi.com/img/githubbutton_sm.svg" />
   </a>
 </p>
 
