@@ -100,28 +100,6 @@ express.use(csrfSynchronisedProtection);
 app.get("/secret-stuff", csrfSynchronisedProtection, myProtectedRoute);
 ```
 
-<p>
-  Or you can conditionally wrap the middleware yourself, like so (basic example):
-<p>
-
-```js
-const myCsrfProtectionMiddleware = (req, res, next) => {
-  // Some method to determine whether we want CSRF protection to apply
-  if (isCsrfProtectionNeeded(req)) {
-    // protect with CSRF
-    csrfSynchronisedProtection(req, res, next);
-  } else {
-    // Don't protect with CSRF
-    next();
-  }
-};
-express.use(myCsrfProtectionMiddleware);
-```
-
-<p>
-  And now this will only require a CSRF token to be present for requests where <code>isCsrfProtectionNeeded(req)</code> evaluates to false.
-</p>
-
 Once a route is protected, you will need to include the most recently generated token in the `x-csrf-token` request header, otherwise you'll receive a `403 - ForbiddenError: invalid csrf token`.
 
 <h3>generateToken</h3>
@@ -144,6 +122,7 @@ req.csrfToken(true); // same as generateToken(req, true);
 By default tokens <b>will NOT be revoked</b>, if you want or need to revoke a token you should use this method to do so. Note that if you call <code>generateToken</code> with <code>overwrite</code> set to true, this will revoke the any existing token and only the new one will be valid.
 
 <h2 id="configuration">Configuration</h2>
+
 
 <h3 id="configuration-error-config">errorConfig</h3>
 
@@ -168,7 +147,91 @@ code?: string | undefined;
 
 Used to customise the error response <code>statusCode</code>, the contained error <code>message</code>, and it's <code>code</code>, the error is constructed via <code>createHttpError</code>. The default values match that of <code>csurf</code> for convenience.
 
-<h3>Processing as a header</h3>
+
+<h3 id="get-token-from-request">getTokenFromRequest</h3>
+
+```ts
+(req: Request) => string | null | undefined;
+```
+
+<p>
+  <b>Optional<br />
+  Default:</b>
+</p>
+
+```ts
+(req: Request) => req.headers["x-csrf-token"];
+```
+
+<p>This function should return the token sent by the frontend, either in the request body/payload, or from the <code>x-csrf-token</code> header. <b>Do NOT</b> return the value from a cookie in this function, this would be the same as having no CSRF protection at all, see the <a href="./FAQ.md#how-should-the-csrf-token-be-transmitted">"How thould the csrf token be transmitted?"</a> section of the FAQ.<p>
+
+
+<h3 id="get-token-from-state">getTokenFromState</h3>
+
+```ts
+(req: Request) => string | null | undefined;
+```
+
+<p>
+  <b>Optional<br />
+  Default:</b>
+</p>
+
+```ts
+(req: Request) => req.session.csrfToken;
+```
+
+<p>This function should return the token from the backend state for the uniquely identified Request.</p>
+
+
+<h3>size</h3>
+
+```ts
+number;
+```
+
+<p>
+  <b>Optional<br />
+  Default:</b> <code>128</code>
+</p>
+
+<p>The size in bytes of the generated CSRF tokens.</p>
+
+
+<h3 id="skip-csrf-protection">skipCsrfProtection</h3>
+
+```ts
+(req: Request) => boolean;
+```
+
+<p><b>Optional - Use this option with extreme caution*</b></p>
+
+<p>Used to determine whether CSRF protection should be skipped for the given request. If this callback is provided and the request is not in the <code>ignoredMethods</code>, then the callback will be called to determine whether or not CSRF token validation should be checked. If it returns <em>true</em> the CSRF protection will be skipped, if it returns <em>false</em> then CSRF protection will be checked.<p>
+
+<p>* It is primarily provided to avoid the need of wrapping the <code>csrfSynchronisedProtection</code> middleware in your own middleware, allowing you to apply a global logic as to whether or not CSRF protection should be executed based on the incoming request. You should <b>only</b> skip CSRF protection for cases you are 100% certain it is safe to do so, for example, requests you have identified as coming from a native app. You should ensure you are not introducing any vulnerabilities that would allow your web based app to circumvent the protection via CSRF attacks. This option is <b>NOT</b> a solution for CSRF errors.</p>
+
+
+<h3 id="store-token-in-state">storeTokenInState</h3>
+
+```ts
+(req: Request, token?: CsrfSyncedToken) => void;
+```
+
+<p>
+  <b>Optional<br />
+  Default:</b>
+</p>
+
+```ts
+(req: Request, token: string) => {
+  req.session.csrfToken = token;
+}
+```
+
+<p>This function should store the token in the backend state for the uniquely identified Request.</p>
+
+
+<h2>Processing as a header</h3>
 
 When initialising <code>csrfSync</code>, you have a few options available for configuration, all of them are optional and have sensible defaults (shown below).
 
@@ -193,7 +256,7 @@ const csrfSyncProtection = csrfSync({
 const csrfSyncProtection = csrfSync();
 ```
 
-<h3>Processing as a form</h3>
+<h2>Processing as a form</h3>
 
 If you intend to use this module to protect user submitted forms, then you can use `generateToken` to create a token and pass it to your view, likely via template variables. Then using a hidden form input such as the example from the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#synchronizer-token-pattern">Cheat Sheet</a>.
 
@@ -246,7 +309,7 @@ const { csrfSynchronisedProtection } = csrfSync({
 
 <h2>Using asynchronously</h2>
 
-<p>csrf-sync itself will not support promises or async, <b>however</b> there is a way around this. If your csrf token is stored externally and needs to be retrieved asynchronously, you can register an asynchronous middleware first, which exposes the token.</p>
+<p><code>csrf-sync</code> itself will not support promises or async, <b>however</b> there is a way around this. If your CSRF token is stored externally and needs to be retrieved asynchronously, you can register an asynchronous middleware first, which exposes the token.</p>
 
 ```js
 (req, res, next) => {

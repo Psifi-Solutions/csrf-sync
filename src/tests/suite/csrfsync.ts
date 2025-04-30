@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { describe, expect, it } from "vitest";
 import type { CsrfRequestToken, CsrfSync } from "../../types";
+import { generateMocks, next } from "../utils/mock";
 
 export type OverwriteMockRequestToken = (req: Request, tokenValue: CsrfRequestToken) => void;
 
@@ -18,26 +19,6 @@ export default (
   overwriteMockRequestToken: OverwriteMockRequestToken,
 ) => {
   describe(testSuiteName, () => {
-    const generateMocks = () => {
-      const mockRequest = {
-        session: {
-          csrfToken: undefined,
-        },
-        method: "POST",
-        headers: {},
-        body: {},
-      } as unknown as Request;
-      const mockResponse = {} as unknown as Response;
-      return {
-        mockRequest,
-        mockResponse,
-      };
-    };
-
-    const next = (err: any) => {
-      if (err) throw err;
-    };
-
     const TEST_TOKEN = "test token";
 
     describe("storeTokenInState", () => {
