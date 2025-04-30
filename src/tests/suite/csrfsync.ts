@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { describe, expect, it } from "vitest";
-import type { CsrfRequestToken, CsrfSync } from "../../index.js";
+import type { CsrfRequestToken, CsrfSync } from "../../types";
 
 export type OverwriteMockRequestToken = (req: Request, tokenValue: CsrfRequestToken) => void;
 

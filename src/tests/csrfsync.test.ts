@@ -1,4 +1,5 @@
-import { type CsrfRequestToken, csrfSync } from "../index.js";
+import { csrfSync } from "..";
+import type { CsrfRequestToken } from "../types";
 import csrfSyncTestSuite from "./suite/csrfsync";
 
 csrfSyncTestSuite("csrfSync default config", csrfSync(), (req, tokenValue) => {
