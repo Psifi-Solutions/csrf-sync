@@ -17,7 +17,6 @@
   "types": "./lib/index.d.ts",
   "files": ["lib/esm/index.js", "lib/cjs/index.cjs", "lib/index.d.ts", "lib/index.d.cts"],
   "scripts": {
-    "test": "vitest run",
     "clean": "rm -rf ./lib",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
@@ -26,8 +25,9 @@
     "build:esm": "tsc -p tsconfig.json",
     "build": "npm run build:types && npm run build:esm && npm run build:cjs",
     "build:clean": "npm run clean && npm run build",
-    "pack": "npm pack",
-    "pack:clean": "rm -rf *.tgz && npm run pack"
+    "pack:clean": "rm -rf *.tgz && npm pack",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "author": "psibean",
   "license": "ISC",
@@ -40,6 +40,7 @@
     "@types/express-session": "^1.17.10",
     "@types/http-errors": "^2.0.4",
     "@types/node": "^18.15.8",
+    "@vitest/coverage-istanbul": "3.1.2",
     "commit-and-tag-version": "12.5.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
