@@ -18,9 +18,9 @@
 </p>
 
 <p align="center">
-  <a href="#dos-and-donts">Dos and Don'ts</a> •
   <a href="#getting-started">Getting Started</a> •
   <a href="#configuration">Configuration</a> •
+  <a href="./FAQ.md">FAQ</a> •
   <a href="#support">Support</a>
 </p>
 
@@ -35,37 +35,12 @@
 </o>
 
 <p>
-  This is why csrf-sync aims to provide a single and targeted implementation to simplify it's use.
+  This is why <code>csrf-sync</code> aims to provide a single and targeted implementation to simplify it's use.
 </p>
-
-<h2 id="dos-and-donts">Dos and Don'ts</h2>
-<ul>
-  <li>
-    Do read the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html">OWASP - Cross-Site Request Forgery Prevention Cheat Sheet</a>
-  </li>
-  <li>
-    Do read the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html">OWASP - Session Management Cheat Sheet</a>
-  </li>
-  <li>
-    Do join the Discord server and ask questions in the <code>psifi-support</code> channel if you need help.
-  </li>
-  <li>
-    Do make sure you do not compromise your security by not following OWASP practices.
-  </li>
-  <li>
-    <b>Do not</b> transmit your CSRF token by cookies.
-  </li>
-  <li>
-    <b>Do not</b> include your CSRF tokens in any log output.
-  </li>
-    <li>
-    <b>Do not</b> use the same unauthenticated session for a user after they have authenticated. Make sure you destroy the session and create a new one. If they logout, destroy the session and create a new one. Keep in mind any generated token will be lost once a session is destroyed.
-  </li>
-</ul>
 
 <h2 id="getting-started">Getting Started</h2>
 <p>
-  This section will guide you through using the default setup, which does sufficiently implement the Synchronised Token Pattern. If you'd like to customise the configuration, see the <a href="#configuration">configuration</a> section.
+  This section will guide you through using the default setup, which does sufficiently implement the Synchronised Token Pattern. Be sure to check the <a href="./FAQ.md">FAQ</a> as it can help you determine whether you need CSRF protection, and if  you do, whether <code>csrf-sync</code> is an appropriate choice, as well as provide insight on how to use it appropriately. If you would like to customise the configuration, see the <a href="#configuration">configuration</a> section, whenever you change a configuration, you should ensure you understand the impact of the change.
 </p>
 <p>
   You will need to be using <a href="https://github.com/expressjs/session">express-session</a> (or a session middleware which provides a <code>request.session</code> property). this utility will add a <code>csrfToken</code> property to <code>request.session</code>.
@@ -95,10 +70,10 @@ const {
 ```
 
 <p>
-  This will extract the default utilities, you can configure these and re-export them from your own module. <b>You should only transmit your token to the frontend as part of a response payload, do not include the token in response headers or in a cookie.</b>
-</O.>
+  This will extract the default utilities, you can configure these and re-export them from your own module. For handling the CSRF token see <a href="./FAQ.md#how-should-the-csrf-token-be-transmitted">"How should the CSRF token be transmitted?"</a> from the FAQ.
+</p>
 <p>
-  This means you will need to create your own route(s) for generating and retrieving a token. For example, a JSON endpoint which you can call before making form submissions:
+  You may need to create your own route(s) for generating and retrieving a token. For example, a JSON endpoint which you can call before making form submissions:
 </p>
 
 ```js
@@ -107,7 +82,7 @@ const myProtectedRoute = (req, res) =>
   res.json({ unpopularOpinion: "Game of Thrones was amazing" });
 ```
 
-You can also put the token into the context of a templated HTML response. Note in this case, the route is a get request, and these request types are not protected (ignored request method), as they do not need to be protected so long as the route is not exposing any sensitive actions.
+You can also put the token into the context of a templated HTML response. Note in this case, the route is a <code>GET</code> request, and these request types are not protected (ignored request method), as they do not need to be protected so long as the route is not exposing any sensitive or sideeffect actions.
 
 ```js
 // Make sure your session middleware is registered before these
@@ -151,7 +126,7 @@ Once a route is protected, you will need to include the most recently generated 
 
 <h3>generateToken</h3>
 
-<p>By default if a token already exists on the session object, generateToken <b>will not overwrite it</b>, it will simply return the existing token. If you wish to force a token generation, you can use the second parameter:<p>
+<p>By default if a token already exists on the session object, <code>generateToken</code> <b>will not overwrite it</b>, it will simply return the existing token. If you wish to force a token generation, you can use the second parameter:<p>
 
 ```js
 generateToken(req, true); // This will force a new token to be generated, even if one already exists
@@ -195,7 +170,7 @@ Used to customise the error response <code>statusCode</code>, the contained erro
 
 <h3>Processing as a header</h3>
 
-When creating your csrfSync, you have a few options available for configuration, all of them are optional and have sensible defaults (shown below).
+When initialising <code>csrfSync</code>, you have a few options available for configuration, all of them are optional and have sensible defaults (shown below).
 
 ```js
 const csrfSyncProtection = csrfSync({
@@ -258,9 +233,9 @@ app.post("/route/", csrfSynchronisedProtection, async (req, res) => {
 ```js
 const { csrfSynchronisedProtection } = csrfSync({
   getTokenFromRequest: (req) => {
-    // If the incoming request is a multipart content type
+    // If the incoming request is a application/x-www-form-urlencoded content type
     // then get the token from the body.
-    if (req.is("multipart")) {
+    if (req.is("application/x-www-form-urlencoded")) {
       return req.body["CSRFToken"];
     }
     // Otherwise use the header for all other request types

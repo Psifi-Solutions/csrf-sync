@@ -15,6 +15,7 @@ node_modules/
 # vscode
 .vscode/
 
+dist/
 lib/
 example/package-lock.json
 coverage
