@@ -37,6 +37,7 @@ export interface CsrfSyncOptions {
   storeTokenInState?: CsrfTokenStorer;
   size?: number;
   errorConfig?: CsrfErrorConfigOptions;
+  skipCsrfProtection?: (req: Request) => boolean;
 }
 
 export interface CsrfSync {

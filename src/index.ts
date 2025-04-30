@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import type { Request } from "express";
 import createHttpError from "http-errors";
 import type {
   CsrfRequestToken,
@@ -22,8 +23,15 @@ export const csrfSync = ({
   },
   size = 128,
   errorConfig: { statusCode = 403, message = "invalid csrf token", code = "EBADCSRFTOKEN" } = {},
+  skipCsrfProtection,
 }: CsrfSyncOptions = {}): CsrfSync => {
   const ignoredMethodsSet = new Set(ignoredMethods);
+
+  const requiresCsrfProtection = (req: Request) => {
+    const shouldSkip = typeof skipCsrfProtection === "function" && skipCsrfProtection(req);
+    // Explicitly check the return type is boolean so we don't accidentally skip protection for other truthy values
+    return !(ignoredMethodsSet.has(req.method as RequestMethod) || (typeof shouldSkip === "boolean" && shouldSkip));
+  };
 
   const invalidCsrfTokenError = createHttpError(statusCode, message, {
     code,
@@ -54,15 +62,12 @@ export const csrfSync = ({
   const csrfSynchronisedProtection: CsrfSynchronisedProtection = (req, res, next) => {
     req.csrfToken = (overwrite) => generateToken(req, overwrite);
 
-    if (ignoredMethodsSet.has(req.method as RequestMethod)) {
+    if (!requiresCsrfProtection(req)) {
+      next();
+    } else if (isRequestValid(req)) {
       next();
     } else {
-      const isCsrfValid = isRequestValid(req);
-      if (!isCsrfValid) {
-        return next(invalidCsrfTokenError);
-      }
-
-      next();
+      next(invalidCsrfTokenError);
     }
   };
 
