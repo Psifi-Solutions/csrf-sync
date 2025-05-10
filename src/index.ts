@@ -12,6 +12,8 @@ import type {
   RequestMethod,
 } from "./types";
 
+export * from "./types";
+
 export const csrfSync = ({
   ignoredMethods = ["GET", "HEAD", "OPTIONS"],
   getTokenFromRequest = (req) => req.headers["x-csrf-token"] as CsrfRequestToken,
